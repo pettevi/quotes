@@ -14,24 +14,19 @@ public class Vote extends HttpServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException 
 	{
 		String id = req.getParameter("id");
-		int i = Integer.valueOf(id);
 		
-		Quotes.votes[i]++;
+		try {
+			int i = Integer.valueOf(id);
+			if (i < Quotes.quotes.length-1 && i >= 0)
+				Quotes.quotes[i].votes++;
+		} catch(NumberFormatException e)
+		{
+		}
 		
-//		try 
-//		{
-			response.setStatus(303);
-	 		response.setHeader( "Location", "http://localhost:8080" );
-	 		response.setHeader( "Connection", "close" );
+		response.setStatus(303);
+ 		response.setHeader( "Location", "/" );
+ 		response.setHeader( "Connection", "close" );
 
-//	 		RequestDispatcher disp;
-//			disp = getServletContext().getRequestDispatcher("/index.jsp");
-//			if (disp != null)
-//				disp.forward(req, resp);
-//		} catch (ServletException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 	
 }

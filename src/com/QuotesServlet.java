@@ -1,6 +1,7 @@
 package com;
 
 import java.io.IOException;
+import java.util.Random;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -16,41 +17,45 @@ public class QuotesServlet extends HttpServlet
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException 
 	{
-		Quote quote = Quotes.getRandomQuote();
+		String character = req.getParameter("character");
 
-		String name, image;
-		if (quote.name.equals("H"))
+		Quote quote;
+
+		try 
 		{
-			name = "Captain Haddock";
-			image = "haddock";
+			int characterid = Integer.parseInt(character);
+			if (Character.validate(characterid))
+			{
+				quote = Quotes.getRandomQuote(characterid);
+			}
+			else
+				quote = Quotes.getRandomQuote();
 		}
-		else if (quote.name.equals("C"))
+		catch (NumberFormatException e)
 		{
-			name = "Prof. Calculus";
-			image = "calculus";
+			quote = Quotes.getRandomQuote();	
 		}
-		else if (quote.name.equals("D"))
-		{
-			name = "Thomson & Thompson";
-			image = "detectives";
-		}
-		else if (quote.name.equals("T"))
-		{
-			name = "Tintin";
-			image = "tintin";
-		}
-		else
-		{
-			name = "unknown";
-			image = "tintin";
-		}
+		
+		String image = Character.getImage(quote.characterid);
+		String name = Character.getName(quote.characterid);
+		String book = Book.getBookName(quote.bookid);
 
 		req.setAttribute("quote", quote.quote);
 		req.setAttribute("name", name);
-		req.setAttribute("id", quote.ID);
+		req.setAttribute("id", quote.quoteID);
 		req.setAttribute("votes", quote.votes);
 		req.setAttribute("image", image);
+		req.setAttribute("book", book);
 
+		Random r = new Random();
+		String s = "rgb(" + (255-r.nextInt(55)) + "," +  (255-r.nextInt(55)) + "," + (255-r.nextInt(55)) + ")";
+		req.setAttribute("bgcolor", s);
+
+		req.setAttribute("x1", 50 + r.nextInt(400));
+		req.setAttribute("y1", 30 + r.nextInt(80));
+		req.setAttribute("x2", r.nextInt(170));
+		req.setAttribute("y2", r.nextInt(50));
+		
 		try 
 		{
 			RequestDispatcher disp;
@@ -58,7 +63,6 @@ public class QuotesServlet extends HttpServlet
 			if (disp != null)
 				disp.forward(req, resp);
 		} catch (ServletException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
